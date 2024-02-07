@@ -1,8 +1,10 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.http import HttpResponse
+from django.contrib.auth import login
+from django.db import IntegrityError
 
 # Create your views here.
 def home(request):
@@ -20,8 +22,9 @@ def signup(request):
                 #registrando usuario
                 user = User.objects.create_user(username=request.POST['username'], password=request.POST['password1'])
                 user.save()
-                return HttpResponse("User created Successfully")
-            except:
+                login(request, user)
+                return redirect("profesores")
+            except IntegrityError:
                 return render(request, 'signup.html', {
                     'form': UserCreationForm,
                     'error': 'Username already exists'
@@ -32,3 +35,5 @@ def signup(request):
         })
            
     
+def profesores(request):
+    return render(request, 'profesores.html')
